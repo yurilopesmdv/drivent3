@@ -18,3 +18,20 @@ export async function getHotels(req: AuthenticatedRequest, res: Response) {
     return res.status(httpStatus.INTERNAL_SERVER_ERROR);
   }
 }
+
+export async function getHotelsWithRooms(req: AuthenticatedRequest, res: Response) {
+  const { userId } = req;
+  const hotelId = req.params.hotelId;
+  try {
+    const hotel = await hotelService.getHotelWithRooms(Number(userId), Number(hotelId));
+    return res.status(httpStatus.OK).send(hotel);
+  } catch (error) {
+    if (error.name === 'NotFoundError') {
+      return res.sendStatus(httpStatus.NOT_FOUND);
+    }
+    if (error.name === 'PaymentRequired') {
+      return res.sendStatus(httpStatus.PAYMENT_REQUIRED);
+    }
+    return res.status(httpStatus.INTERNAL_SERVER_ERROR);
+  }
+}
